@@ -11,23 +11,38 @@ use yii\base\Model;
 class ContactForm extends Model
 {
     public $name;
-    public $email;
-    public $subject;
-    public $body;
-    public $verifyCode;
 
+    public $email;
+
+    public $phone;
+
+    public $doctor;
+
+    public $insurance;
+
+    public $first_visit;
+
+    public $image;
+
+    public $fb_url;
+
+    public $comment;
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            // name, email, subject and body are required
-            [['name', 'email', 'subject', 'body'], 'required'],
-            // email has to be a valid email address
+//             name, email, subject and body are required
+            [['name', 'email', 'phone'], 'required'],
+            [['name', 'email', 'phone'], 'string', 'max' => 128],
+            [['first_visit', 'insurance'], 'boolean'],
+            ['first_visit', 'default', 'value' => 0],
+            [['doctor', 'comment'], 'string'],
+            ['fb_url', 'url'],
+            ['phone', 'match', 'pattern' => '/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/'],
+//             email has to be a valid email address
             ['email', 'email'],
-            // verifyCode needs to be entered correctly
-            ['verifyCode', 'captcha'],
         ];
     }
 
@@ -36,24 +51,15 @@ class ContactForm extends Model
      */
     public function attributeLabels()
     {
-        return [
-            'verifyCode' => 'Verification Code',
-        ];
     }
 
-    /**
-     * Sends an email to the specified email address using the information collected by this model.
-     *
-     * @param  string  $email the target email address
-     * @return boolean whether the email was sent
-     */
-    public function sendEmail($email)
+    public function upload()
     {
-        return Yii::$app->mailer->compose()
-            ->setTo($email)
-            ->setFrom([$this->email => $this->name])
-            ->setSubject($this->subject)
-            ->setTextBody($this->body)
-            ->send();
+        if ($this->validate() && !empty($this->image)) {
+                $this->image->saveAs('uploads/' . $this->image->baseName . '.' . $this->image->extension);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -2,17 +2,11 @@
 namespace frontend\controllers;
 
 use Yii;
-use frontend\models\Contact;
-use common\models\LoginForm;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
 use frontend\models\ContactForm;
-use yii\base\InvalidParamException;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
+use yii\web\Response;
+use yii\web\UploadedFile;
+use yii\widgets\ActiveForm;
 
 /**
  * Site controller
@@ -21,29 +15,25 @@ class SiteController extends Controller
 {
     public function actionIndex()
     {
-        $phone = Yii::$app->request->get('phone');
-        $email = Yii::$app->request->get('email');
+        $model = new ContactForm();
 
-        $contact = new Contact();
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            $model->image = UploadedFile::getInstance($model, 'image');
 
-        $contact->setEmail($email);
-        $contact->setPhone($phone);
+            if (Yii::$app->request->isAjax) {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $valid = ActiveForm::validate($model);
 
+                return $valid;
+            }
 
-        return $this->render('index', ["contact"=>$contact]);
-    }
-    public function actionUser()
-    {
-        $model=new UserForm;
-        if($model->load(Yii::$app->request->post()) && $model->valideate())
-        {
+            $model->upload();
 
         }
-        else
-        {
-            return $this->render('userForm',['model'=>$model] );
-        }
-    }
 
+
+        return $this->render('index', ['model' => $model]);
+    }
 
 }
