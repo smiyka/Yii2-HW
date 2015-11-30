@@ -1,16 +1,22 @@
 <?php
-
-/* @var $this yii\web\View */
+/**
+ * Created by PhpStorm.
+ * User: pedko
+ * Date: 29.11.15
+ * Time: 18:23
+ */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use frontend\models\ContactForm;
 
 $this->title = 'My Yii Application';
 ?>
+
 <div class="site-index">
     <h1>Вітаємо!</h1>
 
-    <h3>Щоб зареєструватися до лякаря, просимо заповнити форму:</h3>
+    <h3>Щоб зареєструватися до лікаря, просимо заповнити форму:</h3>
 
     <p>
 
@@ -24,6 +30,8 @@ $this->title = 'My Yii Application';
             'enableAjaxValidation' => true,
         ]);
         ?>
+
+
         <?= $form->field($model, 'name')->textInput() ?>
         <?= $form->field($model, 'email')->input('email') ?>
         <?= $form->field($model, 'phone')->textInput() ?>
@@ -34,20 +42,31 @@ $this->title = 'My Yii Application';
         <?= $form->field($model, 'image')->fileInput() ?>
         <?= $form->field($model, 'comment')->textarea() ?>
 
+
     <div class="form-group">
         <div class="col-lg-offset-1 col-lg-11">
             <?= Html::submitButton('Вход', ['class' => 'btn btn-primary']) ?>
         </div>
     </div>
     <?php ActiveForm::end() ?>
-    <?php else: ?>
+
+
+    <?php else:
+        $myUser = ContactForm::find(1)->where(['id' => 1]);
+        print_r($myUser);
+
+        $myUser = ContactForm::find()->where(['email' => 'smiyka@meta.ua']);
+        print_r($myUser);
+
+
+        ?>
 
         <p>Name: <?= $model->name ?></p>
         <p>Email: <?= $model->email ?></p>
         <p>Phone: <?= $model->phone ?></p>
         <?php if (!empty($model->fb_url)): ?>
-            <p>Facebook: <a href="<?= $model->fb_url ?>"><?= $model->fb_url ?></a></p>
-        <?php endif ?>
+        <p>Facebook: <a href="<?= $model->fb_url ?>"><?= $model->fb_url ?></a></p>
+    <?php endif ?>
         <p>Doctor: <?= $model->doctor ?></p>
 
         <p>
@@ -57,8 +76,8 @@ $this->title = 'My Yii Application';
             First visit: <?php echo $model->first_visit ? 'yes' : 'no'; ?>
         </p>
         <?php if (!empty($model->comment)): ?>
-            <p>Comment:<?= $model->comment ?></p>
-        <?php endif ?>
+        <p>Comment:<?= $model->comment ?></p>
+    <?php endif ?>
 
         <p><img src="/uploads/<?= $model->image ?>"></p>
     <?php endif ?>

@@ -2,11 +2,14 @@
 namespace frontend\controllers;
 
 use Yii;
+use common\models;
 use frontend\models\ContactForm;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\UploadedFile;
+use yii\web\User;
 use yii\widgets\ActiveForm;
+
 
 /**
  * Site controller
@@ -29,8 +32,27 @@ class SiteController extends Controller
             }
 
             $model->upload();
+            $model->save();
+
 
         }
+
+        //$model = new User();
+
+//        if (Yii::$app->request->isPost) {
+//            $model->load(Yii::$app->request->post());
+//            $model->image = UploadedFile::getInstance($model, 'image');
+//
+//            if (Yii::$app->request->isAjax) {
+//                Yii::$app->response->format = Response::FORMAT_JSON;
+//                $valid = ActiveForm::validate($model);
+//
+//                return $valid;
+//            }
+//
+//            $model->upload();
+//
+//        }
 
 
         return $this->render('index', ['model' => $model]);
