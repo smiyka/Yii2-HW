@@ -1,13 +1,13 @@
 <?php
 namespace frontend\controllers;
 
+use common\models\Client;
+use common\models\Doctor;
+use common\models\Visit;
 use Yii;
-use common\models;
-use frontend\models\ContactForm;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\web\UploadedFile;
-use yii\web\User;
 use yii\widgets\ActiveForm;
 
 
@@ -18,11 +18,13 @@ class SiteController extends Controller
 {
     public function actionIndex()
     {
-        $model = new ContactForm();
+        $model = new Client();
+        $visit = new Visit();
 
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
-            $model->image = UploadedFile::getInstance($model, 'image');
+
+            //$model->image = UploadedFile::getInstance($model, 'image');
 
             if (Yii::$app->request->isAjax) {
                 Yii::$app->response->format = Response::FORMAT_JSON;
@@ -31,31 +33,23 @@ class SiteController extends Controller
                 return $valid;
             }
 
-            $model->upload();
+            //$model->upload();
             $model->save();
 
-
+            $params = Yii::$app->request->post();
+            $doctorsIDS = $params['Visit']['doctor_id'];
+            foreach($doctorsIDS as $id){
+                $visit = new Visit();
+                $visit->doctor_id = $id;
+                $visit->client_id = $model->id;
+                $visit->save();
+            }
         }
 
-        //$model = new User();
-
-//        if (Yii::$app->request->isPost) {
-//            $model->load(Yii::$app->request->post());
-//            $model->image = UploadedFile::getInstance($model, 'image');
-//
-//            if (Yii::$app->request->isAjax) {
-//                Yii::$app->response->format = Response::FORMAT_JSON;
-//                $valid = ActiveForm::validate($model);
-//
-//                return $valid;
-//            }
-//
-//            $model->upload();
-//
-//        }
-
-
-        return $this->render('index', ['model' => $model]);
+        return $this->render('index', [
+            'model' => $model,
+            'visit' => $visit,
+        ]);
     }
 
 }
